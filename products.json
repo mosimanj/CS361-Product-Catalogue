@@ -1,0 +1,17 @@
+{
+    "next_id": 3,
+    "products": [
+        {
+            "id": 1,
+            "name": "spiral notebook",
+            "price": 3,
+            "in-stock": false
+        },
+        {
+            "id": 2,
+            "name": "pencil sharpener",
+            "price": 10.25,
+            "in-stock": false
+        }
+    ]
+}
