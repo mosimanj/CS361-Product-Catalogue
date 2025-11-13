@@ -25,10 +25,20 @@ report_request = {
     'report type': 'out-of-stock'
 }
 
-# Convert request to JSON & send
-request_json = json.dumps(report_request) #TODO: Add all request types
+# Example Request - Add
+request_json = json.dumps(add_request)
 socket.send_string(request_json)
+message = socket.recv().decode('utf-8')
+print(message)
 
-# Receive filepath and decode back to a string
+# Example Request - Edit
+request_json = json.dumps(edit_request)
+socket.send_string(request_json)
+message = socket.recv().decode('utf-8')
+print(message)
+
+# Example Request - Report
+request_json = json.dumps(report_request)
+socket.send_string(request_json)
 message = socket.recv().decode('utf-8')
 print(message)
