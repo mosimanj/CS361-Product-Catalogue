@@ -1,23 +1,35 @@
 import json
 import zmq
 
-# TODO: Add docstrings, comments
-
 def load_catalogue():
+    """
+    Opens products.json and returns the data in a Python Dictionary.
+    :return: Dictionary containing all product data in products.json.
+    """
     with open('products.json', 'r') as file:
         return json.load(file)
 
 def save_catalogue(catalogue):
+    """
+    Saves the input Dictionary containing updated product information to products.json.
+    :param catalogue: Input Dictionary containing updated product information.
+    :return: n/a
+    """
     with open('products.json', 'w') as file:
         json.dump(catalogue, file, indent=4)
 
-def add_product(req_data):
+def add_product(new_product):
+    """
+    Receives a Dictionary containing new product information, parses it, and adds the new product to products.json.
+    :param new_product: Dictionary containing the new product to be added to the catalogue.
+    :return: String confirming success with the new product's information.
+    """
     catalogue = load_catalogue()
     new_product = {
         'id': catalogue['next_id'],
-        'name': req_data['name'],
-        'price': req_data['price'],
-        'in-stock': req_data['in-stock']
+        'name': new_product['name'],
+        'price': new_product['price'],
+        'in-stock': new_product['in-stock']
     }
 
     catalogue['products'].append(new_product)
@@ -26,18 +38,31 @@ def add_product(req_data):
     save_catalogue(catalogue)
     return f'Product added: {new_product}'
 
-def edit_product(req_data):
+def edit_product(request_data):
+    """
+    Receives a Dictionary containing the ID of the product to edit along with the updates to be made. Updates indicated
+    fields before storing the updated catalogue in products.json.
+    :param request_data: Dictionary containing the ID of the product to edit along with the updates to be made.
+    :return: String confirming the success of the product edit with the edited product's information.
+    """
     catalogue = load_catalogue()
 
+    # Locate product to edit and apply each update
     for product in catalogue['products']:
-        if product['id'] == req_data['id']:
-            for update in req_data['updates']:
-                product[update] = req_data['updates'][update]
+        if product['id'] == request_data['id']:
+            for update in request_data['updates']:
+                product[update] = request_data['updates'][update]
 
             save_catalogue(catalogue)
             return f'Product updated: {product}'
 
 def product_report(report_type):
+    """
+    Parses product catalogue and returns products that match the report type.
+    :param report_type: String representing what products should be returned. Options: 'all', 'in-stock',
+    'out-of-stock'.
+    :return: JSON object containing matching products.
+    """
     catalogue = load_catalogue()
     results = []
 
@@ -56,8 +81,12 @@ def product_report(report_type):
 
     return results
 
-
 def route_request(req_data):
+    """
+    Routes the received request to the appropriate helper function and returns the resulting data.
+    :param req_data: Dictionary containing the client request.
+    :return: String or JSON object containing the results of the requested operation.
+    """
     if req_data['type'] == 'add':
         return add_product(req_data)
     elif req_data['type'] == 'edit':
@@ -72,7 +101,6 @@ socket.bind("tcp://*:5728")
 
 
 while True:
-    # Receive message
     message = socket.recv_string()
     request = json.loads(message)
 
