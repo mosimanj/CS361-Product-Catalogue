@@ -38,6 +38,17 @@ def add_product(new_product):
     save_catalogue(catalogue)
     return f'Product added: {new_product}'
 
+def get_product(product_id):
+    """
+    Receives a product ID and returns the matching product record if it exists.
+    :param product_id: Int representing the product ID being searched for.
+    :return: JSON containing product data matching ID.
+    """
+    catalogue = load_catalogue()
+    for product in catalogue['products']:
+        if product['id'] == product_id:
+            return json.dumps(product)
+
 def edit_product(request_data):
     """
     Receives a Dictionary containing the ID of the product to edit along with the updates to be made. Updates indicated
@@ -89,6 +100,8 @@ def route_request(req_data):
     """
     if req_data['type'] == 'add':
         return add_product(req_data)
+    elif req_data['type'] == 'get':
+        return get_product(req_data['id'])
     elif req_data['type'] == 'edit':
         return edit_product(req_data)
     elif req_data['type'] == 'report':
