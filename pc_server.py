@@ -6,8 +6,13 @@ def load_catalogue():
     Opens products.json and returns the data in a Python Dictionary.
     :return: Dictionary containing all product data in products.json.
     """
-    with open('products.json', 'r') as file:
-        return json.load(file)
+    try:
+        with open('products.json', 'r') as file:
+            return json.load(file)
+    except FileNotFoundError:
+        starter_catalogue = {'next_id': 1, 'products': []}
+        save_catalogue(starter_catalogue)
+        return load_catalogue()
 
 def save_catalogue(catalogue):
     """
